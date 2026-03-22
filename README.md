@@ -15,17 +15,16 @@
 5. [Project Structure](#project-structure)
 6. [Setup Instructions](#setup-instructions)
 7. [Configuration](#configuration)
-8. [Running the System](#running-the-system)
-9. [Output Structure](#output-structure)
-10. [Assumptions Made](#assumptions-made)
-11. [Compute Load Estimates](#compute-load-estimates)
-12. [Features](#features)
+8. [Output Structure](#output-structure)
+9. [Assumptions Made](#assumptions-made)
+10. [Compute Load Estimates](#compute-load-estimates)
+11. [Features](#features)
 
 ---
 
 ## Overview
 
-VisionGate processes video streams (MP4 file or live RTSP camera) to:
+VisionGate processes video streams (MP4 file) to:
 
 - Detect faces in real-time using YOLOv8-face
 - Generate 512-d ArcFace embeddings via InsightFace buffalo_l
@@ -44,7 +43,7 @@ VisionGate processes video streams (MP4 file or live RTSP camera) to:
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                         Video Source                             │
-│                   (MP4 file / RTSP stream)                       │
+│                          (MP4 file)                              │
 └───────────────────────────┬──────────────────────────────────────┘
                             │ frames
                             ▼
