@@ -1,9 +1,45 @@
+# ── Model weights (too large for GitHub) ─────────────────────────
 models/*.pt
 models/*.onnx
+models/*.bin
+
+# ── InsightFace cache ─────────────────────────────────────────────
 .insightface/
+
+# ── Python cache ──────────────────────────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 *.egg-info/
-outputs/
+dist/
+build/
+*.egg
+
+# ── Database files ────────────────────────────────────────────────
 *.db
+*.sqlite
+*.sqlite3
+
+# ── Video outputs (too large, keep only sample_outputs/) ──────────
+outputs/
+
+# ── Logs (keep only sample_outputs/logs) ─────────────────────────
+logs/
+
+# ── Environment ───────────────────────────────────────────────────
+.env
+.venv/
+venv/
+env/
+
+# ── OS files ──────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Jupyter checkpoints ───────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Temporary files ───────────────────────────────────────────────
+*.tmp
+*.temp
