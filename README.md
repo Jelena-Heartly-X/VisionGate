@@ -2,7 +2,7 @@
 
 > An AI-driven system that detects, tracks, and counts unique visitors from video streams using YOLOv8 face detection, ArcFace embeddings, and Kalman filter tracking.
 
-**Demo Video:** [Watch Demo](https://your-loom-or-youtube-link-here)
+**Demo Video:** [Watch Demo](https://youtu.be/efzBPcHytfw)
 
 ---
 
@@ -129,7 +129,6 @@ VisionGate processes video streams (MP4 file or live RTSP camera) to:
 | SQLite DB with faces / events / visitor_summary | ✅ |
 | Video-derived timestamps in DB and logs | ✅ |
 | Configurable skip_frames via config.json | ✅ |
-| RTSP live stream support | ✅ |
 | Flask live dashboard (bonus) | ✅ |
 | Post-run pipeline + model performance charts | ✅ |
 | Haar cascade fallback if YOLO unavailable | ✅ |
@@ -195,8 +194,6 @@ face-tracker/
 │       └── index.html               ← Live dashboard UI
 ├── tools/
 │   └── generate_metrics.py          ← Post-run metrics + visualization charts
-├── models/
-│   └── .gitkeep                     ← YOLOv8-face weights go here 
 └── sample_outputs/
     └── record_20250620_184807/      ← Sample processed video output
         ├── database/
@@ -221,7 +218,7 @@ face-tracker/
 - CUDA-capable GPU recommended (CPU fallback available)
 - Google Colab with T4 GPU (recommended)
 
-### Option A — Google Colab (recommended)
+### Google Colab (recommended)
 
 1. Upload `face-tracker-submission.tar.gz` to Google Drive at `MyDrive/`
 2. Open `face_tracker_colab.ipynb` in Google Colab
@@ -246,32 +243,6 @@ face-tracker/
 | Cell 14 | Verify events.log coverage |
 | Cell 15 | Display entry/exit image galleries |
 | Cell 16 | Clean all outputs (reset before re-run) |
-
-### Option B — Local installation
-
-```bash
-# Clone the repo
-git clone https://github.com/Jelena-Heartly-X/VisionGate.git
-cd face-tracker
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Download YOLOv8-face model
-mkdir -p models
-wget -O models/yolov8n-face.pt \
-  https://github.com/akanametov/yolo-face/releases/download/v0.0.0/yolov8n-face.pt
-
-# Run on a video file (no preview, no frontend)
-python main.py --source /path/to/video.mp4 --no-preview --no-frontend
-
-# Run with live Flask dashboard
-python main.py --source /path/to/video.mp4 --no-preview
-# Open http://localhost:5000
-
-# Generate metrics for an already-processed video
-python tools/generate_metrics.py --output_dir outputs/record_20250620_184807
-```
 
 ---
 
@@ -337,34 +308,6 @@ python tools/generate_metrics.py --output_dir outputs/record_20250620_184807
 | `tracking.max_lost_frames` | Frames to keep a track alive without detection before triggering exit | `30` |
 | `tracking.min_hits` | Minimum detections before a track is confirmed and shown | `2` |
 | `video.use_rtsp` | Set `true` to switch from file to live RTSP stream | `false` |
-
----
-
-## Running the System
-
-### Video file — no frontend
-```bash
-python main.py --source /path/to/video.mp4 --no-preview --no-frontend
-```
-
-### Video file — with live dashboard
-```bash
-python main.py --source /path/to/video.mp4 --no-preview
-# Open http://localhost:5000
-```
-
-### Live RTSP stream (interview mode)
-Update `config.json`:
-```json
-"video": {
-  "use_rtsp": true,
-  "rtsp_url": "rtsp://username:password@camera_ip:554/stream"
-}
-```
-Then run:
-```bash
-python main.py --no-preview
-```
 
 ---
 
@@ -506,7 +449,6 @@ Sample lines:
 - Exactly one entry image and one exit image per face per visit — enforced natively in EventLogger, not as a post-processing step
 - Video-derived timestamps throughout — DB, logs, and image filenames all reflect actual recording time
 - Frame skipping configurable via `skip_frames` in `config.json`
-- RTSP live stream support for interview/production use
 
 ### Logging
 - `events.log` covers 7 event types: FACE_ENTRY, FACE_EXIT, RECOGNITION, EMBEDDING, REGISTRATION, TRACKING, SYSTEM
