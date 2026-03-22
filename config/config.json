@@ -1,0 +1,48 @@
+{
+  "video": {
+    "source": "/content/drive/MyDrive/Video Datasets/record_20250620_184807.mp4",
+    "rtsp_url": "rtsp://username:password@camera_ip:554/stream",
+    "use_rtsp": false,
+    "frame_width": 1280,
+    "frame_height": 720,
+    "fps_limit": 30
+  },
+  "detection": {
+    "skip_frames": 1,
+    "yolo_model": "yolov8n-face.pt",
+    "confidence_threshold": 0.45,
+    "iou_threshold": 0.4,
+    "device": "cuda"
+  },
+  "recognition": {
+    "model_name": "buffalo_l",
+    "embedding_similarity_threshold": 0.45,
+    "min_face_size": 35,
+    "ctx_id": 0
+  },
+  "tracking": {
+    "tracker_type": "bytetrack",
+    "max_lost_frames": 30,
+    "min_confidence": 0.3,
+    "iou_threshold": 0.15,
+    "min_hits": 2
+  },
+  "logging": {
+    "log_file": "logs/events.log",
+    "image_store_base": "logs",
+    "log_level": "INFO",
+    "max_log_size_mb": 100
+  },
+  "database": {
+    "type": "sqlite",
+    "sqlite_path": "/content/drive/MyDrive/face-tracker-project/outputs/record_20250620_184807/database/face_tracker.db",
+    "mongo_uri": "mongodb://localhost:27017/face_tracker",
+    "postgres_uri": "postgresql://user:pass@localhost:5432/face_tracker"
+  },
+  "frontend": {
+    "enabled": false,
+    "host": "0.0.0.0",
+    "port": 5000,
+    "debug": false
+  }
+}

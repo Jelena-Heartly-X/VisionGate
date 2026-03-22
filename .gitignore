@@ -1,0 +1,9 @@
+models/*.pt
+models/*.onnx
+.insightface/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+outputs/
+*.db

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Face Tracker Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --accent: #00e5ff;
+      --accent2: #7c3aed;
+      --green: #10b981;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --border: #1e293b;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 32px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+    .status-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      grid-template-rows: auto 1fr;
+      gap: 20px;
+      padding: 24px 32px;
+      max-width: 1600px;
+    }
+    /* ── Stats row ── */
+    .stats-row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .stat-card .label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .stat-card .value {
+      font-family: 'Space Mono', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-card .sub { font-size: 0.8rem; color: var(--muted); }
+    /* ── Video panel ── */
+    .video-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .panel-header .tag {
+      background: var(--accent2);
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.68rem;
+    }
+    #video-stream {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #000;
+    }
+    /* ── Sidebar ── */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .events-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 520px;
+    }
+    #events-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+    .event-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+      transition: background 0.15s;
+    }
+    .event-item:hover { background: var(--surface2); }
+    .event-type {
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .entry { background: rgba(16,185,129,0.15); color: var(--green); }
+    .exit  { background: rgba(239,68,68,0.15);  color: var(--red); }
+    .event-id   { font-family: 'Space Mono', monospace; color: var(--accent); font-size: 0.75rem; flex: 1; }
+    .event-time { color: var(--muted); white-space: nowrap; font-size: 0.72rem; }
+
+    /* ── Visitor count big card ── */
+    .visitor-big {
+      background: linear-gradient(135deg, var(--accent2) 0%, #1a2235 100%);
+      border: 1px solid var(--accent2);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+    }
+    .visitor-big .vb-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); }
+    .visitor-big .vb-count { font-family: 'Space Mono', monospace; font-size: 3.5rem; font-weight: 700; color: #fff; line-height: 1; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="status-dot"></div>
+    <h1>⬡ FACE TRACKER — LIVE DASHBOARD</h1>
+  </header>
+
+  <div class="layout">
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="label">Unique Visitors</div>
+        <div class="value" id="stat-unique">—</div>
+        <div class="sub">Registered faces</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Frames Processed</div>
+        <div class="value" id="stat-frames">—</div>
+        <div class="sub">Total frames seen</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Live FPS</div>
+        <div class="value" id="stat-fps">—</div>
+        <div class="sub">Processing speed</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Total Detections</div>
+        <div class="value" id="stat-dets">—</div>
+        <div class="sub">Cumulative face detections</div>
+      </div>
+    </div>
+
+    <!-- Video Panel -->
+    <div class="video-panel">
+      <div class="panel-header">
+        <span>Live Feed</span>
+        <span class="tag">MJPEG</span>
+      </div>
+      <img id="video-stream" src="/video_feed" alt="Live Feed"/>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="visitor-big">
+        <div class="vb-label">Total Unique Visitors</div>
+        <div class="vb-count" id="visitor-big-count">0</div>
+      </div>
+
+      <div class="events-panel">
+        <div class="panel-header">
+          <span>Event Log</span>
+          <span id="event-count" style="color:var(--accent);font-family:'Space Mono',monospace;font-size:0.9rem;">0</span>
+        </div>
+        <div id="events-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function fmt(ts) {
+      if (!ts) return '—';
+      const d = new Date(ts);
+      return d.toLocaleTimeString();
+    }
+
+    async function fetchStats() {
+      try {
+        const r = await fetch('/api/stats');
+        const d = await r.json();
+        document.getElementById('stat-unique').textContent = d.unique_visitors ?? '—';
+        document.getElementById('stat-frames').textContent = d.frames_processed ?? '—';
+        document.getElementById('stat-fps').textContent    = d.fps ?? '—';
+        document.getElementById('stat-dets').textContent  = d.detections_total ?? '—';
+        document.getElementById('visitor-big-count').textContent = d.unique_visitors ?? '0';
+      } catch(e) {}
+    }
+
+    async function fetchEvents() {
+      try {
+        const r = await fetch('/api/events?limit=40');
+        const events = await r.json();
+        const list = document.getElementById('events-list');
+        list.innerHTML = '';
+        document.getElementById('event-count').textContent = events.length;
+        events.forEach(ev => {
+          const div = document.createElement('div');
+          div.className = 'event-item';
+          const shortId = (ev.face_id || '').slice(-10);
+          div.innerHTML = `
+            <span class="event-type ${ev.event_type}">${ev.event_type}</span>
+            <span class="event-id">${shortId}</span>
+            <span class="event-time">${fmt(ev.timestamp)}</span>
+          `;
+          list.appendChild(div);
+        });
+      } catch(e) {}
+    }
+
+    // Poll every 2 seconds
+    fetchStats(); fetchEvents();
+    setInterval(fetchStats, 2000);
+    setInterval(fetchEvents, 2000);
+  </script>
+</body>
+</html>
